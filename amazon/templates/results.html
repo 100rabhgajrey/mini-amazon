@@ -1,0 +1,9 @@
+<h1>{{ results|length }} results for "{{ query }}"</h1>
+
+{% for result in results %}
+    <div>
+        <h3>{{ result.name }}</h3><br>
+        Description : <b>{{ result.desc }}</b><br>
+        Price : <i>{{ result.price }}</i><br>
+    </div>
+{% endfor %}
