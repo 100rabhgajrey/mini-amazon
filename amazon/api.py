@@ -1,4 +1,4 @@
-from flask import request, send_from_directory, jsonify, render_template
+from flask import request, send_from_directory,session, jsonify, render_template
 
 from amazon import app
 from amazon.models import product as product_model
@@ -57,6 +57,8 @@ def user():
         password = request.form['password']
         success = user_model.authenticate(username, password)
         if success:
+            user_details=user_model.search_a_user(username)
+            session['user_id']=str(user_details['_id'])
             if username == 'admin':
                 return render_template('admin.html', name=username)
             else:
@@ -72,6 +74,30 @@ def user():
         existing_user = user_model.search_a_user(username)
         if existing_user is None:
             user_model.user_signup(name, username, password)
+
+            user_details = user_model.search_a_user(username)
+            session['user_id'] = str(user_details['_id'])
+
             return render_template('home.html', name=name)
         else:
             return render_template('index.html', message='username exists')
+
+
+
+# API related to cart - add to cart, remove from cart, view cart
+@app.route('/api/cart', methods=['POST'])
+def cart():
+        # add / delete / retrieve
+        op_type = request.form['op_type']
+        if op_type == 'add':
+            product_id = request.form['product_id']
+            user_id = session['user_id']
+            user_model.add_to_cart(user_id, product_id)
+            user_details = user_model.search_by_userid(user_id)
+            return render_template('home.html', name=user_details['name'])
+        elif op_type == 'delete':
+            product_id = request.form['product_id']
+            user_model.delete_from_cart(session['user_id'], product_id)
+        elif op_type == 'retrieve':
+
+         user_model.retrieve_cart(session['user_id'])

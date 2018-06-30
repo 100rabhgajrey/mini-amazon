@@ -7,6 +7,11 @@
         <h3>{{result.name}}</h3><br>
         Description: <b>{{result.desc}}</b><br>
         Price : <i>{{result.price}}</i><br>
+        <form action="/api/cart" method="post">
+        <input type="text" name="op_type" value="add" hidden>
+            <input type="text" name="product_id" value="{{ result._id }}" hidden>
+             <input type="submit" value="Add to cart">
+        </from>
 
     </div>
 
