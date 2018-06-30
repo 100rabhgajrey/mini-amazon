@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Mini Amazon</title>
+    <title>Admin Page</title>
 </head>
 <body>
-    <h2>Add product</h2>
+    <h1> Welcome, {{name}} </h1>
+    <h2> Add Product</h2>
     <form action="/api/product" method="post">
         <input type="text" name="op_type" value="add" hidden>
         <input type="text" name="name" placeholder="Name" required><br>
@@ -28,5 +29,7 @@
         <input type="number" name="price" placeholder="Updated Price"required><br>
         <input type="submit" value="UPDATE">
     </form>
+
+</form>
 </body>
 </html>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mini Amazon</title>
+</head>
+
+<body>
+    <h1> Welcome, {{ name }} </h1>
+    <h2>Search Product </h2>
+    <form action="/api/product" method="get">
+        <input type="text" name="name" placeholder="Name" required>
+        <input type="submit" value="SEARCH">
+    </form>
+</body>
+</html>
