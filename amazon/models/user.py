@@ -82,5 +82,12 @@ def delete_from_cart(user_id, product_id):
 
 
 def retrieve_cart(user_id):
-    # TODO
-    pass
+    condition = {'_id': ObjectId(user_id)}
+
+    cursor = db.users.find(condition)
+
+    if cursor.count() == 1:
+        user_data = cursor[0]
+        return user_data['cart']
+    else:
+     return False
