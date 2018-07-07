@@ -1,3 +1,5 @@
+from flask import send_from_directory,render_template
+from amazon.models import user
 from amazon.models import db
 from bson.objectid import ObjectId
 
@@ -75,8 +77,20 @@ def add_to_cart(user_id, product_id):
 
 
 def delete_from_cart(user_id, product_id):
-    # TODO
-    pass
+    condition = {'_id': ObjectId(user_id)}
+    cursor = db.users.find(condition)
+
+    if cursor.count() == 1:
+        user_data = cursor[0]
+    else:
+        return False
+
+    if product_id not in user_data['cart']:
+        return False
+
+    user_data['cart'].remove(product_id)
+    db.users.update_one(filter=condition, update={'$set': user_data})
+    return True
 
     # return all products in a users cart
 
@@ -91,3 +105,7 @@ def retrieve_cart(user_id):
         return user_data['cart']
     else:
      return False
+
+
+
+

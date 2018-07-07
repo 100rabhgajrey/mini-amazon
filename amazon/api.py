@@ -47,16 +47,26 @@ def product():
 
         elif op_type == 'update':
 
-            name = request.form['name']
-            updated_product = {'name': name,
-                               'desc': request.form['desc'],
-                               'price': request.form['price']
-                               }
-            product_model.update_product(name, updated_product)
+            product_id = request.form['product_id']
+            matching_products = product_model.get_details(product_id)
+            new_name = request.form['name']
+            new_desc = request.form['desc']
+            new_price = request.form['price']
+            if new_name == '':
+                new_name = matching_products['name']
+            if new_desc == '':
+                new_desc = matching_products['desc']
+            if new_price == '':
+                new_price = matching_products['price']
+            updated_product = {
+                'name': new_name,
+                'desc': new_desc,
+                'price': new_price
+            }
+            product_model.update_products(product_id, updated_product)
 
-            return 'Product details updated successfully!'
-
-        return 'Product not found'
+            # take user back to index page
+            return render_template('admin.html', message='Product successfully updated')
 
 
 @app.route('/api/users', methods=['POST'])
@@ -110,6 +120,8 @@ def cart():
         elif op_type == 'delete':
             product_id = request.form['product_id']
             user_model.delete_from_cart(session['user_id'], product_id)
+            user_details=user_model.search_by_userid(user_id)
+            return render_template('home.html',name=user_details['name'])
         elif op_type == 'retrieve':
            cart_item_ids=user_model.retrieve_cart(user_id)
            cart_items=[]
@@ -122,3 +134,16 @@ def cart():
                                   products=cart_items,
                                   name=user_details['name'])
 
+@app.route('/api/admin', methods=['GET', 'POST'])
+def admin():
+    if request.method == 'POST':
+        p_id = request.form['product_id']
+        product_model.delete_products(p_id)
+        return render_template('admin.html', message='Product successfully deleted')
+
+    elif request.method == 'GET':
+    # lets search for the product here...
+        query_name = request.args['name']
+        matching_products = product_model.search_by_name(query_name)
+
+        return render_template('admin_results.html', query=query_name, products=matching_products)
