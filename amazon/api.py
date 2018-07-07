@@ -24,13 +24,13 @@ def logout():
 def product():
     if request.method == 'GET':
         query = request.args['name']
-        matching_products = product_model.search_product(query)
+        matching_products = product_model.search_by_name(query)
         return render_template('results.html', query=query, product=matching_products)
 
     elif request.method == 'POST':
         op_type = request.form['op_type']
         name = request.form['name']
-        price = request.form['price']
+        price = int(request.form['price'])
         desc = request.form['desc']
 
         prod = {
@@ -111,6 +111,7 @@ def cart():
         # add / delete / retrieve
         op_type = request.form['op_type']
         user_id = session['user_id']
+        user_details = user_model.search_by_userid(user_id)
         if op_type == 'add':
             product_id = request.form['product_id']
 
@@ -124,15 +125,21 @@ def cart():
             return render_template('home.html',name=user_details['name'])
         elif op_type == 'retrieve':
            cart_item_ids=user_model.retrieve_cart(user_id)
-           cart_items=[]
+           cart_item=[]
+           total=0
            for p_id in cart_item_ids:
-               cart_items.append(product_model.get_details(p_id))
+            #cart_item.append(product_model.get_details(p_id))
 
-           user_details = user_model.search_by_userid(user_id)
+            #user_details = user_model.search_by_userid(session['user_id'])
+            #user_details = user_model.search_by_userid(user_id)
+            cart_items = product_model.get_details(p_id)
+            cart_item.append(cart_items)
+            total += cart_items['price']
 
            return render_template('cart.html',
-                                  products=cart_items,
-                                  name=user_details['name'])
+                                  products=cart_item,
+                                  name=user_details['name'],
+                                  total=total)
 
 @app.route('/api/admin', methods=['GET', 'POST'])
 def admin():
